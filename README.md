@@ -3,7 +3,7 @@
 Para rodar um projeto navegue ate a pasta de um dos projeto e execute o comando:
 
 ```bash
-    docker-compose up -d
+docker-compose up -d
 ```
 
 ### Temas abordados neste repositorio

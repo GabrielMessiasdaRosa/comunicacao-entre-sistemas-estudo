@@ -1,4 +1,4 @@
-# Serie de projetos para provar conceitos aprendidos sobre REST.
+# Serie de projetos para provar conceitos aprendidos sobre Comunicaçao entre sistemas.
 
 Para rodar um projeto navegue ate a pasta de um dos projeto e execute o comando:
 

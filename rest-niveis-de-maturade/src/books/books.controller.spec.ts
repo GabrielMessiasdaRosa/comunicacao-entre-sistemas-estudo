@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
 import { Book } from './entities/book.entity';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 const baseUrl = 'http://localhost:3000/books';
 const limit = 10;
@@ -29,132 +31,117 @@ describe('BooksController', () => {
     controller = module.get<BooksController>(BooksController);
   });
 
-  it('should get all books', () => {
-    const books: Book[] = [
-      {
-        id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
-        title: 'The Lord of the Rings',
+  it('should create a book and return HATEOAS links', async () => {
+    const bookDto: CreateBookDto = { title: 'The Lord of the Rings' };
+    const book: Book = {
+      id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
+      title: 'The Lord of the Rings',
+    };
+
+    const expected: BaseResponse<Book> = {
+      data: book,
+      links: {
+        self: `${baseUrl}/${book.id}`,
+        update: `${baseUrl}/${book.id}`,
+        delete: `${baseUrl}/${book.id}`,
       },
-      {
-        id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
-        title: 'The Hobbit',
-      },
-    ];
-    const totalPages = Math.ceil(books.length / (limit || 10));
+    };
+
+    jest.spyOn(controller, 'create').mockImplementation(async () => expected);
+
+    const result = await controller.create(bookDto);
+
+    expect(result).toEqual(expected);
+  });
+
+  it('should find all books and return HATEOAS links', async () => {
+    const book: Book = {
+      id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
+      title: 'The Lord of the Rings',
+    };
+
     const expected: ListBaseResponse<Book[]> = {
-      data: books,
+      data: [book],
       links: {
         first: `${baseUrl}?limit=${limit}&page=1`,
-        last: `${baseUrl}?limit=${limit}&page=${totalPages}`,
-        next:
-          currentPage < totalPages
-            ? `${baseUrl}?limit=${limit}&page=${currentPage + 1}`
-            : null,
-        previous:
-          currentPage > 1
-            ? `${baseUrl}?limit=${limit}&page=${currentPage - 1}`
-            : null,
+        last: `${baseUrl}?limit=${limit}&page=1`,
+        next: `${baseUrl}?limit=${limit}&page=2`,
+        previous: `${baseUrl}?limit=${limit}&page=1`,
       },
       meta: {
-        currentPage,
-        itemCount: books.length,
+        currentPage: 1,
+        itemCount: 1,
         itemsPerPage: limit,
-        totalPages: totalPages,
+        totalPages: 1,
       },
     };
 
     jest.spyOn(controller, 'findAll').mockImplementation(async () => expected);
 
-    expect(controller.findAll()).resolves.toEqual(expected);
+    const result = await controller.findAll(limit, 1);
+
+    expect(result).toEqual(expected);
   });
 
-  it('should get a book by id', async () => {
-    const expectedBook: Book = {
+  it('should find one book and return HATEOAS links', async () => {
+    const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
       title: 'The Lord of the Rings',
     };
 
-    const bookWithLinks: BaseResponse<Book> = {
-      data: expectedBook,
+    const expected: BaseResponse<Book> = {
+      data: book,
       links: {
-        self: `http://localhost:3000/books/${expectedBook.id}`,
-        update: `http://localhost:3000/books/${expectedBook.id}`,
-        delete: `http://localhost:3000/books/${expectedBook.id}`,
+        self: `${baseUrl}/${book.id}`,
+        update: `${baseUrl}/${book.id}`,
+        delete: `${baseUrl}/${book.id}`,
       },
     };
 
-    jest
-      .spyOn(controller, 'findOne')
-      .mockImplementation(async () => bookWithLinks);
+    jest.spyOn(controller, 'findOne').mockImplementation(async () => expected);
 
-    const book: BaseResponse<Book> = await controller.findOne(expectedBook.id);
-    expect(book).toEqual(bookWithLinks);
+    const result = await controller.findOne(book.id);
+
+    expect(result).toEqual(expected);
   });
 
-  it('should create a book', async () => {
-    const newBook: Book = {
+  it('should update a book and return HATEOAS links', async () => {
+    const bookDto: UpdateBookDto = { title: 'Updated Book' };
+    const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
       title: 'The Lord of the Rings',
     };
 
-    const bookWithLinks: BaseResponse<Book> = {
-      data: newBook,
+    const expected: BaseResponse<Book> = {
+      data: book,
       links: {
-        self: `http://localhost:3000/books/${newBook.id}`,
-        update: `http://localhost:3000/books/${newBook.id}`,
-        delete: `http://localhost:3000/books/${newBook.id}`,
+        self: `${baseUrl}/${book.id}`,
+        update: `${baseUrl}/${book.id}`,
+        delete: `${baseUrl}/${book.id}`,
       },
     };
 
-    jest
-      .spyOn(controller, 'create')
-      .mockImplementation(async () => bookWithLinks);
+    jest.spyOn(controller, 'update').mockImplementation(async () => expected);
 
-    const book: BaseResponse<Book> = await controller.create(newBook);
-    expect(book).toEqual(bookWithLinks);
+    const result = await controller.update(book.id, bookDto);
+
+    expect(result).toEqual(expected);
   });
 
-  it('should update a book', async () => {
-    const updatedBook: Book = {
+  it('should remove a book and return the removed book', async () => {
+    const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
       title: 'The Lord of the Rings',
     };
 
-    const bookWithLinks: BaseResponse<Book> = {
-      data: updatedBook,
-      links: {
-        self: `http://localhost:3000/books/${updatedBook.id}`,
-        update: `http://localhost:3000/books/${updatedBook.id}`,
-        delete: `http://localhost:3000/books/${updatedBook.id}`,
-      },
+    const expected: BaseResponse<Book> = {
+      data: book,
     };
 
-    jest
-      .spyOn(controller, 'update')
-      .mockImplementation(async () => bookWithLinks);
+    jest.spyOn(controller, 'remove').mockImplementation(async () => expected);
 
-    const book: BaseResponse<Book> = await controller.update(
-      updatedBook.id,
-      updatedBook,
-    );
-    expect(book).toEqual(bookWithLinks);
-  });
+    const result = await controller.remove(book.id);
 
-  it('should delete a book', async () => {
-    const deletedBook: Book = {
-      id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
-      title: 'The Lord of the Rings',
-    };
-
-    const deletedBookResponse: BaseResponse<Book> = {
-      data: deletedBook,
-    };
-
-    jest
-      .spyOn(controller, 'remove')
-      .mockImplementation(async () => deletedBookResponse);
-
-    const book: BaseResponse<Book> = await controller.remove(deletedBook.id);
-    expect(book).toEqual(deletedBookResponse);
+    expect(result).toEqual(expected);
   });
 });

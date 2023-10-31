@@ -1,8 +1,8 @@
 import { Repository } from 'typeorm';
-import { BooksService } from './books.service';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
-import { Book } from './entities/book.entity';
+import { BooksService } from '../../src/books/books.service';
+import { CreateBookDto } from '../../src/books/dto/create-book.dto';
+import { UpdateBookDto } from '../../src/books/dto/update-book.dto';
+import { Book } from '../../src/books/entities/book.entity';
 
 describe('BooksService', () => {
   let service: BooksService;

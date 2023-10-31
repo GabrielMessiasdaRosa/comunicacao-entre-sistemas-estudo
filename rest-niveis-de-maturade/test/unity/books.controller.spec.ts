@@ -3,11 +3,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { BaseResponse } from 'src/lib/base-response';
 import { ListBaseResponse } from 'src/lib/list-base-response';
 import { Repository } from 'typeorm';
-import { BooksController } from './books.controller';
-import { BooksService } from './books.service';
-import { Book } from './entities/book.entity';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
+import { BooksController } from '../../src/books/books.controller';
+import { BooksService } from '../../src/books/books.service';
+import { Book } from '../../src/books/entities/book.entity';
+import { CreateBookDto } from '../../src/books/dto/create-book.dto';
+import { UpdateBookDto } from '../../src/books/dto/update-book.dto';
 
 const baseUrl = 'http://localhost:3000/books';
 const limit = 10;

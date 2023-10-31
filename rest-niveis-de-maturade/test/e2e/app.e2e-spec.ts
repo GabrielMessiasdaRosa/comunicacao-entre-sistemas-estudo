@@ -2,10 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { AppController } from '../src/app.controller';
-import { AppService } from '../src/app.service';
-import { BooksModule } from '../src/books/books.module';
-import { Book } from '../src/books/entities/book.entity';
+import { AppController } from '../../src/app.controller';
+import { AppService } from '../../src/app.service';
+import { BooksModule } from '../../src/books/books.module';
+import { Book } from '../../src/books/entities/book.entity';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { Book } from './books/entities/book.entity';
+import { AppController } from '../../src/app.controller';
+import { AppService } from '../../src/app.service';
+import { Book } from '../../src/books/entities/book.entity';
 
 describe('AppModule', () => {
   let app: TestingModule;

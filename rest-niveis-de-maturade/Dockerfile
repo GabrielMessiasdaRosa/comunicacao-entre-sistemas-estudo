@@ -15,4 +15,4 @@ COPY . .
 
 RUN npm install
 
-ENTRYPOINT wait-for pgsql:5432 -t 25 -- npm run start:dev
+ENTRYPOINT wait-for pgsql:5432 -t 25 -- npm install && npm run start:dev

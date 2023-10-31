@@ -17,17 +17,27 @@ services:
   pgsql:
     image: postgres:latest
     container_name: pgsql
-    ports:
-      - '5432:5432'
     networks:
       - rest-api-network
+    ports:
+      - '5432:5432'
     volumes:
       - ./pgsql:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_NAME=postgres
       - POSTGRES_DB=postgres
-
+  pg-admin:
+    image: dpage/pgadmin4
+    container_name: pg-admin
+    ports:
+      - '5433:80'
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@email.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    networks:
+      - rest-api-network
   nginx:
     image: nginx:latest
     container_name: nginx

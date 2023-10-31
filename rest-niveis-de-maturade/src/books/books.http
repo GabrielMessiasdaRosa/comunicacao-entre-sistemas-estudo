@@ -1,0 +1,24 @@
+### Criar um novo livro
+POST http://localhost:3000/books
+Content-Type: application/json
+
+{
+  "title": "Livro Teste"
+}
+
+### Obter todos os livros
+GET http://localhost:3000/books
+
+### Obter um livro por ID
+GET http://localhost:3000/books/7baea339-ffb1-493e-9332-45b8664d18a2
+
+### Atualizar um livro existente
+PATCH http://localhost:3000/books/place_ID_here
+Content-Type: application/json
+
+{
+  "title": "Novo Título do Livro"
+}
+
+### Deletar um livro por ID
+DELETE http://localhost:3000/books/place_ID_here

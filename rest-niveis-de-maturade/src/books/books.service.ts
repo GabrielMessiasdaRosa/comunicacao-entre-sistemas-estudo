@@ -27,10 +27,13 @@ export class BooksService {
     };
   }
 
-  async findAll(limit?, page?): Promise<ListBaseResponse<Book[]>> {
+  async findAll(
+    limit?: number,
+    page?: number,
+  ): Promise<ListBaseResponse<Book[]>> {
     const books = await this.booksRepository.find({
-      skip: limit * (page - 1),
-      take: limit,
+      skip: limit * (page - 1) || 0,
+      take: limit || 10,
     });
     const totalPages = Math.ceil(books.length / (limit || 10));
     const currentPage = page || 1;

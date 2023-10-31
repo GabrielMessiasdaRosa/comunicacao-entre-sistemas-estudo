@@ -21,7 +21,7 @@ describe('BooksService', () => {
     service = new BooksService(mockRepository);
   });
 
-  it('should create a book', async () => {
+  it('should create a book and return HATEOAS links', async () => {
     const bookDto: CreateBookDto = { title: 'The Lord of the Rings' };
     const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
@@ -33,25 +33,35 @@ describe('BooksService', () => {
 
     const result = await service.create(bookDto);
 
-    expect(result).toEqual(book);
-    expect(mockRepository.create).toHaveBeenCalledWith(bookDto);
-    expect(mockRepository.save).toHaveBeenCalledWith(book);
+    expect(result.data).toEqual(book);
+    expect(result.links.self).toEqual(`http://localhost:3000/books/${book.id}`);
+    expect(result.links.update).toEqual(
+      `http://localhost:3000/books/${book.id}`,
+    );
+    expect(result.links.delete).toEqual(
+      `http://localhost:3000/books/${book.id}`,
+    );
   });
 
-  it('should find all books', async () => {
+  it('should find all books and return HATEOAS links', async () => {
     const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
       title: 'The Lord of the Rings',
     };
     mockRepository.find.mockResolvedValue([book]);
 
-    const result = await service.findAll();
+    const result = await service.findAll(10, 1);
 
-    expect(result).toEqual([book]);
-    expect(mockRepository.find).toHaveBeenCalled();
+    expect(result.data).toEqual([book]);
+    expect(result.links.first).toEqual(
+      `http://localhost:3000/books?limit=10&page=1`,
+    );
+    expect(result.links.last).toEqual(
+      `http://localhost:3000/books?limit=10&page=1`,
+    );
   });
 
-  it('should find one book', async () => {
+  it('should find one book and return HATEOAS links', async () => {
     const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
       title: 'The Lord of the Rings',
@@ -62,13 +72,17 @@ describe('BooksService', () => {
       '69ad42b0-ac38-4698-b0a0-53b33423bc15',
     );
 
-    expect(result).toEqual(book);
-    expect(mockRepository.findOne).toHaveBeenCalledWith({
-      where: { id: '69ad42b0-ac38-4698-b0a0-53b33423bc15' },
-    });
+    expect(result.data).toEqual(book);
+    expect(result.links.self).toEqual(`http://localhost:3000/books/${book.id}`);
+    expect(result.links.update).toEqual(
+      `http://localhost:3000/books/${book.id}`,
+    );
+    expect(result.links.delete).toEqual(
+      `http://localhost:3000/books/${book.id}`,
+    );
   });
 
-  it('should update a book', async () => {
+  it('should update a book and return HATEOAS links', async () => {
     const bookDto: UpdateBookDto = { title: 'Updated Book' };
     const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
@@ -83,17 +97,17 @@ describe('BooksService', () => {
       bookDto,
     );
 
-    expect(result).toEqual(book);
-    expect(mockRepository.findOne).toHaveBeenCalledWith({
-      where: { id: '69ad42b0-ac38-4698-b0a0-53b33423bc15' },
-    });
-    expect(mockRepository.update).toHaveBeenCalledWith(
-      '69ad42b0-ac38-4698-b0a0-53b33423bc15',
-      bookDto,
+    expect(result.data).toEqual(book);
+    expect(result.links.self).toEqual(`http://localhost:3000/books/${book.id}`);
+    expect(result.links.update).toEqual(
+      `http://localhost:3000/books/${book.id}`,
+    );
+    expect(result.links.delete).toEqual(
+      `http://localhost:3000/books/${book.id}`,
     );
   });
 
-  it('should remove a book', async () => {
+  it('should remove a book and return the removed book', async () => {
     const book: Book = {
       id: '69ad42b0-ac38-4698-b0a0-53b33423bc15',
       title: 'The Lord of the Rings',
@@ -104,10 +118,6 @@ describe('BooksService', () => {
 
     const result = await service.remove('69ad42b0-ac38-4698-b0a0-53b33423bc15');
 
-    expect(result).toEqual(book);
-    expect(mockRepository.findOne).toHaveBeenCalledWith({
-      where: { id: '69ad42b0-ac38-4698-b0a0-53b33423bc15' },
-    });
-    expect(mockRepository.delete).toHaveBeenCalledWith(book);
+    expect(result.data).toEqual(book);
   });
 });

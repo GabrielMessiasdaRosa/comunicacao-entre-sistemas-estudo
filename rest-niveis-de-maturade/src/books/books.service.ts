@@ -32,8 +32,8 @@ export class BooksService {
     page?: number,
   ): Promise<ListBaseResponse<Book[]>> {
     const books = await this.booksRepository.find({
-      skip: limit * (page - 1) || 0,
-      take: limit || 10,
+      skip: Number(limit) * (page - 1) || 0,
+      take: Number(limit) || 10,
     });
     const totalPages = Math.ceil(books.length / (limit || 10));
     const currentPage = page || 1;

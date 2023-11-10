@@ -1,0 +1,269 @@
+Aqui algumas informaçoes importantes sobre REST apresentado no modulo de comunicaçao entre sistemas 
+
+// texto livre
+
+# comunicaçao assincrona e sincrona
+
+## assincrona: 
+    comunicaçao assincrona é quando o cliente faz uma requisiçao e nao espera
+    a resposta do servidor, ele continua executando o codigo e quando o servidor
+    responde ele trata a resposta
+
+## comunicaçao sincrona:
+    comunicaçao sincrona é quando o cliente faz uma requisiçao e espera a resposta
+    do servidor, ele nao continua executando o codigo e quando o servidor
+    responde ele trata a resposta
+
+# REST ( Representational State Transfer )
+
+muitos desenvolvedores usam o termo REST de forma incorreta, o que é muito comum
+    é que o termo REST é usado para descrever qualquer API que se comunique sobre HTTP
+    usando JSON como formato de dados
+
+ele é stateless, ou seja, nao guarda estado, cada requisiçao é independente uma da outra
+    nao guarda informaçao de sessao, nao guarda informaçao de estado, cada requisiçao
+    é independente uma da outra
+
+ele é simples e leve, nao tem muita complexidade
+
+Cacheavel, ou seja, pode ser armazenado em cache, o que é muito bom para performance
+    e escalabilidade
+
+
+### Niveis de maturidade REST ( richardson maturity model ): 
+
+Nível 0: The Swamp of POX ( Plain Old XML )
+    - usa apenas um endpoint para todas as operaçoes
+    - usa apenas um metodo HTTP ( POST )
+    - usa apenas um formato de dados ( XML )
+
+exemplo: 
+    - endpoint: /api
+    - metodo: POST
+    - formato de dados: XML
+
+    <api>
+        <nome>Joao</nome>
+        <idade>20</idade>
+    </api>
+
+(xml é um formato de dados que é muito verboso, ou seja, tem muita informaçao, 
+    é muito pesado, é muito lento, é muito dificil de ler, é muito dificil de entender
+    usado para troca de dados entre sistemas mais antigos
+)
+
+Nível 1: Resources (substantivos)
+    GET: /api/clientes
+    GET: /api/clientes/1
+    POST: /api/clientes
+    PUT: /api/clientes/1
+    DELETE: /api/clientes/1
+no caso acima, o recurso é o cliente
+
+Nível 2: HTTP Verbs (verbos HTTP)
+    GET: /api/clientes
+    GET: /api/clientes/1
+    POST: /api/clientes
+    PUT: /api/clientes/1
+    DELETE: /api/clientes/1
+no caso acima, o recurso é o cliente e o verbo é o metodo HTTP 
+existem outros verbos HTTP (OPTIONS, HEAD, TRACE, CONNECT, PATCH), mas os mais usados sao esses 4 ( GET, POST, PUT, DELETE )
+
+Nível 3: Hypermedia Controls (HATEOAS)
+    GET: /api/clientes
+    GET: /api/clientes/1
+    POST: /api/clientes
+    PUT: /api/clientes/1
+    DELETE: /api/clientes/1
+HATEOAS é um recurso que permite que o servidor envie para o cliente os links para os recursos relacionados
+    por exemplo, se o cliente faz uma requisiçao para o servidor para obter um cliente, o servidor envia o cliente
+    e tambem envia os links para os recursos relacionados, por exemplo, o link para obter os pedidos desse cliente
+    ou o link para obter os endereços desse cliente, ou o link para obter os produtos desse cliente, etc
+    isso é muito bom para o cliente, pois ele nao precisa saber os endpoints, ele apenas segue os links
+    isso é bom para o servidor, pois ele pode mudar os endpoints sem quebrar o cliente. Por exemplo,
+    se o servidor mudar o endpoint de obter os pedidos de /api/clientes/1/pedidos para /api/clientes/1/orders
+    o cliente nao vai quebrar, pois ele nao precisa saber o endpoint, ele apenas segue o link que o servidor
+    enviou para ele, user.links.find(link => link.rel === 'pedidos').href
+
+    antes:
+    {
+        "id": 1,
+        "nome": "Joao",
+        "links": [
+            {
+                "rel": "self",
+                "href": "http://localhost:8080/api/clientes/1"
+            },
+            {
+                "rel": "pedidos",
+                "href": "http://localhost:8080/api/clientes/1/pedidos"
+            }
+        ]
+    }
+
+    depois:
+    {
+        "id": 1,
+        "nome": "Joao",
+        "links": [
+            {
+                "rel": "self",
+                "href": "http://localhost:8080/api/clientes/1"
+            },
+            {
+                "rel": "pedidos",
+                "href": "http://localhost:8080/api/clientes/1/orders"
+            }
+        ]
+    }
+
+
+# Method e Content negotiation 
+
+### Uma boa API REST 
+
+Checklist de uma boa api rest 
+
+- Utiliza URis unicas para serviços e itens expostos para esses serviços
+- Utiliza todos os verbos HTTP para realizar as operaçoes em seus recursos, incluindo o caching
+- Prove links relacionados para os recursos exemplificando o que pode ser feito
+
+### HAL, collection+json, siren
+
+HAL significa Hypertext Application Language
+
+Media type = application/hal+json 
+
+Exemplo: 
+    
+    {
+        "id": 1,
+        "nome": "Joao",
+        "_links": {
+            "self": {
+                "href": "http://localhost:8080/api/clientes/1"
+            },
+            "pedidos": {
+                "href": "http://localhost:8080/api/clientes/1/pedidos"
+            }
+        }
+        "_embedded": {
+            "pedidos": [
+                {
+                    "id": 1,
+                    "data": "2020-01-01",
+                    "valor": 100.0,
+                    "_links": {
+                        "self": {
+                            "href": "http://localhost:8080/api/pedidos/1"
+                        }
+                    }
+                },
+                {
+                    "id": 2,
+                    "data": "2020-01-02",
+                    "valor": 200.0,
+                    "_links": {
+                        "self": {
+                            "href": "http://localhost:8080/api/pedidos/2"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+Dessa forma a api ganha mais riqueza, pois o cliente pode seguir os links para obter os recursos relacionados
+
+### HTTP Method negotiation 
+
+O Http possui 9 verbos, mas os mais usados sao 4 ( GET, POST, PUT, DELETE )
+
+OPTIONS - retorna os metodos HTTP que o recurso suporta
+exemplo: 
+    response: 200 OK
+    Allow: GET, POST
+
+caso entre com DELETE ou PUT 
+    response: 405 Method Not Allowed
+    Allow: GET, POST
+
+
+PATCH - atualiza parcialmente um recurso
+exemple: 
+    PATCH /api/clientes/1 HTTP/1.1
+    Host: localhost:8080
+    Content-Type: application/json
+
+    {
+        "nome": "Joao"
+    }
+
+    response: 200 OK
+    {
+        "id": 1,
+        "nome": "Joao",
+        "idade": 20
+    }
+
+HEAD - retorna apenas o header da resposta
+exemplo: 
+    HEAD /api/clientes/1 HTTP/1.1
+    Host: localhost:8080
+
+    response: 200 OK
+    Content-Type: application/json
+    Content-Length: 50
+
+
+TRACE - retorna a requisiçao recebida
+exemplo: 
+    TRACE /api/clientes/1 HTTP/1.1
+    Host: localhost:8080
+
+    response: 200 OK
+    Content-Type: message/http
+    Content-Length: 50
+
+    TRACE /api/clientes/1 HTTP/1.1
+    Host: localhost:8080
+
+
+CONNECT - usado para tunelamento de protocolos
+exemplo: 
+    CONNECT /api/clientes/1 HTTP/1.1
+    Host: localhost:8080
+
+    response: 200 OK
+    Content-Type: message/http
+    Content-Length: 50
+
+    CONNECT /api/clientes/1 HTTP/1.1
+    Host: localhost:8080
+
+
+#### accept negotiation
+- o cliente solicita a informaçao e o tipo de retorno pelo server baseado no media type informado por ordem de prioridade
+
+GET /api/clientes/1 HTTP/1.1
+Host: localhost:8080
+Accept: application/json, application/xml
+
+Response pode ser o retorno dos dados ou: 
+HTTP/1.1 406 Not Acceptable
+
+#### Content type negotiation
+
+- atraves de um content-type no header da requisiçao, o servidor verifica se ira conseguir processar a informaçao para retornar o que o cliente espera
+
+POST /api/clientes HTTP/1.1
+Host: localhost:8080
+Accept: application/json, application/xml
+Content-Type: application/json
+
+{
+    "nome": "Joao",
+    "idade": 20
+}
+
+Caso o servido nao aceite o content-type informado, ele retorna:
+HTTP/1.1 415 Unsupported Media Type

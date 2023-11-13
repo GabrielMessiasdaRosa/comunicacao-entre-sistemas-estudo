@@ -1,9 +1,7 @@
-import {
-  ExecutionContext,
-  UnsupportedMediaTypeException,
-} from '@nestjs/common';
+import { MethodNotAllowedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MethodNegotiationInterceptor } from '../../src/method-negotiation.interceptor';
+import { of } from 'rxjs';
+import { MethodNegotiationInterceptor } from '../../src/interceptors/method-negotiation.interceptor';
 
 describe('MethodNegotiationInterceptor', () => {
   let interceptor: MethodNegotiationInterceptor;
@@ -18,7 +16,23 @@ describe('MethodNegotiationInterceptor', () => {
     );
   });
 
-  it('should allow GET requests', () => {
+  it('should be defined', () => {
+    expect(interceptor).toBeDefined();
+  });
+
+  it('should throw MethodNotAllowedException if method is not in the white list', () => {
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => ({ method: 'DELETE' }),
+      }),
+    };
+
+    expect(() =>
+      interceptor.intercept(context as any, { handle: () => of(null) }),
+    ).toThrow(MethodNotAllowedException);
+  });
+
+  it('should not throw MethodNotAllowedException if method is in the white list', () => {
     const context = {
       switchToHttp: () => ({
         getRequest: () => ({ method: 'GET' }),
@@ -26,23 +40,7 @@ describe('MethodNegotiationInterceptor', () => {
     };
 
     expect(() =>
-      interceptor.intercept(context as ExecutionContext, {
-        handle: () => 'test',
-      }),
-    ).not.toThrow();
-  });
-
-  it('should throw UnsupportedMediaTypeException for non-GET requests', () => {
-    const context = {
-      switchToHttp: () => ({
-        getRequest: () => ({ method: 'POST' }),
-      }),
-    };
-
-    expect(() =>
-      interceptor.intercept(context as ExecutionContext, {
-        handle: () => 'test',
-      }),
-    ).toThrow(UnsupportedMediaTypeException);
+      interceptor.intercept(context as any, { handle: () => of(null) }),
+    ).not.toThrow(MethodNotAllowedException);
   });
 });

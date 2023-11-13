@@ -3,7 +3,7 @@ import {
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentTypeNegotiationInterceptor } from '../../src/content-type-negotiation.interceptor';
+import { ContentTypeNegotiationInterceptor } from '../../src/interceptors/content-type-negotiation.interceptor';
 
 describe('ContentTypeNegotiationInterceptor', () => {
   let interceptor: ContentTypeNegotiationInterceptor;

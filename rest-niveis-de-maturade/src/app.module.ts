@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksModule } from './books/books.module';
 import { Book } from './books/entities/book.entity';
+import { ContentTypeNegotiationInterceptor } from './content-type-negotiation.interceptor';
+import { MethodNegotiationInterceptor } from './method-negotiation.interceptor';
 
 @Module({
   imports: [
@@ -21,6 +23,16 @@ import { Book } from './books/entities/book.entity';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: 'APP_INTERCEPTOR',
+      useClass: ContentTypeNegotiationInterceptor,
+    },
+    {
+      provide: 'APP_INTERCEPTOR',
+      useClass: MethodNegotiationInterceptor,
+    },
+  ],
 })
 export class AppModule {}

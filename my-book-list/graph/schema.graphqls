@@ -1,0 +1,78 @@
+
+##GraphQL Schema é um tipo de linguagem de consulta para sua API, e um sistema de execução para executar 
+##consultas com um conjunto de dados existente. O GraphQL foi desenvolvido para resolver problemas de 
+##desempenho e flexibilidade com APIs RESTful. ##
+
+# Neste caso, o GraphQL Schema é uma representação do nosso banco de dados. 
+type Category {
+  id: ID!
+  name: String!
+  description: String
+  #Os relacionamentos sao definidos como campos no tipo de objeto. 
+  books: [Books!]
+}
+
+type Books {
+  id: ID!
+  name: String!
+  description: String
+  categories: [Category]
+}
+
+type Author {
+  id: ID!
+  name: String!
+  books: [Books!]
+}
+
+
+## O GraphQL Schema define três tipos de consulta: Query, Mutation e Subscription. ##
+## Inputs sao usados para passar dados para as mutações. ##
+input NewCategory {
+  name: String!
+  description: String
+}
+
+input NewBook {
+  name: String!
+  description: String
+  categories: [ID!]
+}
+
+input NewAuthor {
+  name: String!
+}
+
+## Queries sao usados para recuperar dados. ##
+type Query {
+  categories: [Category!]!
+  category(id: ID!): Category
+
+  books: [Books!]!
+  book(id: ID!): Books
+
+  authors: [Author!]!
+  author(id: ID!): Author
+}
+
+## Mutations sao usados para criar, atualizar e excluir dados. ##
+type Mutation {
+  createCategory(input: NewCategory!): Category
+  updateCategory(id: ID!, input: NewCategory!): Category
+  deleteCategory(id: ID!): Category
+
+  createBook(input: NewBook!): Books
+  updateBook(id: ID!, input: NewBook!): Books
+  deleteBook(id: ID!): Books
+
+  createAuthor(name: String!): Author
+  updateAuthor(id: ID!, name: String!): Author
+  deleteAuthor(id: ID!): Author
+}
+
+## Subscriptions sao usados para receber notificações sobre eventos que ocorrem no servidor. ##
+type Subscription {
+  categoryAdded: Category
+  bookAdded: Books
+  authorAdded: Author
+}

@@ -1,13 +1,16 @@
-FROM golang:latest
+FROM golang:latest as builder
 
 WORKDIR /usr/src/app
 
-COPY go.mod go.sum ./
-RUN go mod download && go mod verify
-
 COPY . .
 
-RUN go build -v -o /usr/local/bin/ ./...
+RUN cd ./cmd/server && go build -v -o /usr/local/bin/ ./...
 
+FROM scratch
 
-ENTRYPOINT ["my-book-list"]
+COPY --from=builder /usr/local/bin/server /usr/local/bin/server
+
+COPY go.mod go.sum ./
+RUN go mod tidy && go mod download && go mod verify
+
+ENTRYPOINT ["/usr/local/bin/server"]

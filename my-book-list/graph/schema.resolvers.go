@@ -7,12 +7,16 @@ package graph
 import (
 	"context"
 	"fmt"
-	"my-book-list/v2/graph/model"
+	"github.com/GabrielMessiasdaRosa/my-book-list/graph/model"
 )
 
 // CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input model.NewCategory) (*model.Category, error) {
-	panic(fmt.Errorf("not implemented: CreateCategory - createCategory"))
+	category, err := r.Categorydb.Create(input.Name)
+	if err != nil {
+		return nil, err
+	}
+	return &model.Category{ID: category.ID, Name: category.Name}, nil
 }
 
 // UpdateCategory is the resolver for the updateCategory field.

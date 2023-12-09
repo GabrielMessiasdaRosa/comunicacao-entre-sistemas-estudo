@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"my-book-list/v2/graph/model"
+	"github.com/GabrielMessiasdaRosa/my-book-list/graph/model"
 	"strconv"
 	"sync"
 	"sync/atomic"

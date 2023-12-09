@@ -7,3 +7,36 @@ services:
       - "8080:8080"
     volumes:
       - .:/usr/src/app
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=postgres
+      - DB_SSLMODE=disable
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  pgAdmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: gabrielmessiasdarosa@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: pgAdmin
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+volumes:
+  pgadmin:
+  postgres:

@@ -7,9 +7,8 @@
 type Category {
   id: ID!
   name: String!
-  description: String
   #Os relacionamentos sao definidos como campos no tipo de objeto. 
-  books: [Books!]
+  books: [Books]
 }
 
 type Books {
@@ -22,7 +21,7 @@ type Books {
 type Author {
   id: ID!
   name: String!
-  books: [Books!]
+  books: [Books]
 }
 
 
@@ -30,7 +29,6 @@ type Author {
 ## Inputs sao usados para passar dados para as mutações. ##
 input NewCategory {
   name: String!
-  description: String
 }
 
 input NewBook {
